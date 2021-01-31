@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PaymentSystem.DTO;
 using PaymentSystem.Interfaces;
 using PaymentSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PaymentSystem.Services
 {
@@ -39,7 +39,7 @@ namespace PaymentSystem.Services
 
             return Tuple.Create(plus, minus);
         }
-        
+
         public async Task<Transaction> Create(TransactionDto transaction)
         {
             var result = await _context.Transactions.AddAsync(new Transaction

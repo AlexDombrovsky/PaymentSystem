@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using PaymentSystem.Interfaces;
 using System.Threading.Tasks;
-using PaymentSystem.Interfaces;
 
 namespace PaymentSystem.Services
 {
@@ -22,7 +19,7 @@ namespace PaymentSystem.Services
 
         public async Task CommitTransactionAsync()
         {
-           await _context.Database.CommitTransactionAsync();
+            await _context.Database.CommitTransactionAsync();
         }
 
         public async Task RollbackTransactionAsync()

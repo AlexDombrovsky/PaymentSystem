@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc;
 using PaymentSystem.DTO;
 using PaymentSystem.Interfaces;
 using PaymentSystem.Models;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Protocols;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PaymentSystem.Controllers
 {
