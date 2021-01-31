@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PaymentSystem.DTO;
 using PaymentSystem.Interfaces;
 using PaymentSystem.Models;
 
@@ -38,10 +39,16 @@ namespace PaymentSystem.Services
 
             return Tuple.Create(plus, minus);
         }
-
-        public async Task<Transaction> Create(Transaction transaction)
+        
+        public async Task<Transaction> Create(TransactionDto transaction)
         {
-            var result = await _context.Transactions.AddAsync(transaction);
+            var result = await _context.Transactions.AddAsync(new Transaction
+            {
+                Amount = transaction.Amount,
+                Date = transaction.Date,
+                UserId = transaction.UserId,
+                Notes = transaction.Notes,
+            });
             await _context.SaveChangesAsync();
 
             return result.Entity;

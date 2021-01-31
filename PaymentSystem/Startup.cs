@@ -27,6 +27,7 @@ namespace PaymentSystem
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ITransactionDealerRepository, TransactionDealerRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

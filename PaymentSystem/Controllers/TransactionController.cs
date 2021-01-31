@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using PaymentSystem.DTO;
 using PaymentSystem.Interfaces;
 using PaymentSystem.Models;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Protocols;
 
 namespace PaymentSystem.Controllers
 {
@@ -13,11 +18,13 @@ namespace PaymentSystem.Controllers
     {
         private readonly ITransactionService _transactionService;
         private readonly IUserService _userService;
+        private readonly ITransactionDealerRepository _transactionDealerRepository;
 
-        public TransactionController(IUserService userService, ITransactionService transactionService)
+        public TransactionController(ITransactionService transactionService, IUserService userService, ITransactionDealerRepository transactionDealerRepository)
         {
-            _userService = userService;
             _transactionService = transactionService;
+            _userService = userService;
+            _transactionDealerRepository = transactionDealerRepository;
         }
 
         [HttpGet("Balance/{userId:Guid}")]
@@ -36,30 +43,29 @@ namespace PaymentSystem.Controllers
             return Ok(transactions);
         }
 
-        [HttpPost("AddTransaction/{userId:Guid}/{transactionTime:DateTime}/{amount:decimal}/{notes}")]
-        public async Task<ActionResult<Transaction>> AddTransaction(Guid userId, DateTime transactionTime,
-            decimal amount,
-            string notes)
+        [HttpPost("AddTransaction")]
+        public async Task<ActionResult<Transaction>> AddTransaction(TransactionDto model)
         {
             if (!ModelState.IsValid) return BadRequest();
-
-            var transaction = new Transaction
-            {
-                UserId = userId,
-                Date = transactionTime,
-                Amount = amount,
-                Notes = notes
-            };
+            await _transactionDealerRepository.BeginTransactionAsync();
             try
             {
-                await _transactionService.Create(transaction);
+                await _transactionService.Create(model);
+                await _userService.UpdateBalance(model.UserId, model.Amount);
+
+                await _transactionDealerRepository.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _transactionDealerRepository.RollbackTransactionAsync();
+                throw;
             }
             finally
             {
-                await _userService.UpdateBalance(userId, amount);
+                await _transactionDealerRepository.DisposeTransactionAsync();
             }
 
-            return Ok(transaction);
+            return Ok(model);
         }
 
         [HttpGet("Statistic/{userId:Guid}/{date:DateTime}")]
